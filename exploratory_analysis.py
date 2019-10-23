@@ -56,8 +56,9 @@ dataS1 = pd.concat([pd.read_csv(f, header=None) for f in
 dataS2 = pd.concat([pd.read_csv(f, header=None) for f in 
                 arquivosSala2], ignore_index = True)
 
-dataS1.columns = dataS2.columns = ['time','frontal','vertical','lateral',
-                                   'id','rssi','phase','frequency','activity']
+dataS1.columns = dataS2.columns = ['tempo','frontal','vertical','lateral',
+                                   'antena','rssi','fase','frequencia',
+                                   'atividade']
 
 full_data = pd.concat([dataS1, dataS2])
 
@@ -95,16 +96,18 @@ print("S2:")
 print(dataS2.describe())
 
 print("Conhecendo a distribuição dos dados por classes (class distribution)")
-print(dataS1.groupby('activity').size())
-print(dataS2.groupby('activity').size())
+print(dataS1.groupby('atividade').size())
+print(dataS2.groupby('atividade').size())
 
 print("Criando gráficos de caixa da distribuição das classes")
 print("S1:")
-dataS1.plot(kind='box', subplots=True, layout=(3,3), sharex=False, sharey=False, figsize  = [10, 10])
+dataS1.plot(kind='box', subplots=True, layout=(3,3), sharex=False, 
+            sharey=False, figsize  = [10, 10])
 plt.show()
 
 print("S2:")
-dataS2.plot(kind='box', subplots=True, layout=(3,3), sharex=False, sharey=False, figsize  = [10, 10])
+dataS2.plot(kind='box', subplots=True, layout=(3,3), sharex=False, 
+            sharey=False, figsize  = [10, 10])
 plt.show()
 
 print("Criando histogramas dos dados por classes")
@@ -119,40 +122,44 @@ plt.show()
 print("Criando gráficos de dispersão dos dados")
 print("S1:")
 colors_palette = {1: 'red', 2: 'yellow', 3: 'blue', 4: 'green'}
-colors = [colors_palette[c] for c in dataS1['activity']]
-scatter_matrix(dataS1[['time','frontal','vertical','lateral','id','rssi','phase','frequency']], c=colors, figsize  = [10, 10])
+colors = [colors_palette[c] for c in dataS1['atividade']]
+scatter_matrix(dataS1[['tempo','frontal','vertical','lateral','antena','rssi',
+                       'fase','frequencia']], c=colors, figsize  = [10, 10])
 plt.show()
 
 
 print("S2:")
-colors = [colors_palette[c] for c in dataS2['activity']]
-scatter_matrix(dataS2[['time','frontal','vertical','lateral','id','rssi','phase','frequency']], c=colors, figsize  = [10, 10])
+colors = [colors_palette[c] for c in dataS2['atividade']]
+scatter_matrix(dataS2[['tempo','frontal','vertical','lateral','antena','rssi',
+                       'fase','frequencia']], c=colors, figsize  = [10, 10])
 plt.show()
 
 # Plot 3D da classificação da classe segundo as acelerações nos 3 eixos
 print("S1:")
 fig = plt.figure(figsize=(10,10))
 ax = fig.add_subplot(111, projection='3d')
-for x,c,action in [(1,'r', 'sit on bed'),(2,'g','sit on chair'),(3,'b', 'lying'),(4,'k', 'ambulating')]:
-    xs = dataS1.loc[dataS1['activity'] == x]['frontal']
-    ys = dataS1.loc[dataS1['activity'] == x]['vertical']
-    zs = dataS1.loc[dataS1['activity'] == x]['lateral']
+for x,c,action in [(1,'r', 'sentado na cama'), (2,'g','sentado na cadeira'), 
+                   (3,'b', 'deitado'), (4,'k', 'movimento')]:
+    xs = dataS1.loc[dataS1['atividade'] == x]['frontal']
+    ys = dataS1.loc[dataS1['atividade'] == x]['vertical']
+    zs = dataS1.loc[dataS1['atividade'] == x]['lateral']
     ax.scatter(xs, ys, zs, c=c, marker='.', label=action)
 
 ax.legend()
 ax.set_xlabel('frontal')
 ax.set_ylabel('vertical')
-ax.set_zlabel('lateral')    
+ax.set_zlabel('lateral')
 ax.view_init(None, 30)
 plt.show()
 
 print("S2:")
 fig = plt.figure(figsize=(10,10))
 ax = fig.add_subplot(111, projection='3d')
-for x,c,action in [(1,'r', 'sit on bed'),(2,'g','sit on chair'),(3,'b', 'lying'),(4,'k', 'ambulating')]:
-    xs = dataS2.loc[dataS2['activity'] == x]['frontal']
-    ys = dataS2.loc[dataS2['activity'] == x]['vertical']
-    zs = dataS2.loc[dataS2['activity'] == x]['lateral']
+for x,c,action in [(1,'r', 'sentado na cama'), (2,'g','sentado na cadeira'),
+                   (3,'b', 'deitado'), (4,'k', 'em movimento')]:
+    xs = dataS2.loc[dataS2['atividade'] == x]['frontal']
+    ys = dataS2.loc[dataS2['atividade'] == x]['vertical']
+    zs = dataS2.loc[dataS2['atividade'] == x]['lateral']
     ax.scatter(xs, ys, zs, c=c, marker='.', label=action)
 
 #ax.legend()
@@ -166,11 +173,12 @@ plt.show()
 print("Considerando todo o conjunto de dados:")
 fig = plt.figure(figsize=(20,10))
 ax=fig.add_subplot(111)
-for x,c,action in [(1,'r', 'sit on bed'),(2,'g','sit on chair'),(3,'b', 'lying'),(4,'k', 'ambulating')]:
-    ts = full_data.loc[full_data['activity'] == x]['time']
-    xs = full_data.loc[full_data['activity'] == x]['frontal']
-    ys = full_data.loc[full_data['activity'] == x]['vertical']
-    zs = full_data.loc[full_data['activity'] == x]['lateral']
+for x,c,action in [(1,'r', 'sentado na cama'), (2,'g','sentado na cadeira'),
+                   (3,'b', 'deitado'), (4,'k', 'em movimento')]:
+    ts = full_data.loc[full_data['atividade'] == x]['tempo']
+    xs = full_data.loc[full_data['atividade'] == x]['frontal']
+    ys = full_data.loc[full_data['atividade'] == x]['vertical']
+    zs = full_data.loc[full_data['atividade'] == x]['lateral']
     ax.scatter(ts, xs, c=c, marker='.', label=action)
     ax.scatter(ts, ys, c=c, marker='x', label=action)
     ax.scatter(ts, zs, c=c, marker='^', label=action)
@@ -186,24 +194,28 @@ plt.show()
 
 print("Primeiro ensaio de coleta (1º arquivo)")
 single_sample = pd.read_csv("S1_Dataset/d1p01M", header=None)
-single_sample.columns = ['time','frontal','vertical','lateral','id','rssi','phase','frequency','activity']
+single_sample.columns = ['tempo', 'frontal', 'vertical', 'lateral', 'antena', 
+                         'rssi', 'fase', 'frequencia', 'atividade']
 
 print("Conhecendo a distribuição dos dados por classes (class distribution)")
-print(single_sample.groupby('activity').size())
+print(single_sample.groupby('atividade').size())
 
 print("Criando gráficos de dispersão dos dados")
 colors_palette = {1: 'red', 2: 'yellow', 3: 'blue', 4: 'green'}
-colors = [colors_palette[c] for c in single_sample['activity']]
-scatter_matrix(single_sample[['time','frontal','vertical','lateral','id','rssi','phase','frequency']], c=colors, figsize  = [10, 10])
+colors = [colors_palette[c] for c in single_sample['atividade']]
+scatter_matrix(single_sample[['tempo', 'frontal', 'vertical', 'lateral', 
+                              'antena', 'rssi', 'fase', 'frequencia']], 
+                c=colors, figsize  = [10, 10])
 plt.show()
 
 # Plot 3D da classificação da classe segundo as acelerações nos 3 eixos
 fig = plt.figure(figsize=(10,10))
 ax = fig.add_subplot(111, projection='3d')
-for x,c,action in [(1,'r', 'sit on bed'),(2,'g','sit on chair'),(3,'b', 'lying'),(4,'k', 'ambulating')]:
-    xs = single_sample.loc[single_sample['activity'] == x]['frontal']
-    ys = single_sample.loc[single_sample['activity'] == x]['vertical']
-    zs = single_sample.loc[single_sample['activity'] == x]['lateral']
+for x,c,action in [(1,'r', 'sentado na cama'), (2,'g','sentado na cadeira'),
+                   (3,'b', 'deitado'), (4,'k', 'em movimento')]:
+    xs = single_sample.loc[single_sample['atividade'] == x]['frontal']
+    ys = single_sample.loc[single_sample['atividade'] == x]['vertical']
+    zs = single_sample.loc[single_sample['atividade'] == x]['lateral']
     ax.scatter(xs, ys, zs, c=c, marker='.', label=action)
 
 ax.legend()
@@ -216,11 +228,12 @@ plt.show()
 # Gráfico da aceleração x tempo, classificando segundo as classes
 fig = plt.figure(figsize=(20,10))
 ax=fig.add_subplot(111)
-for x,c,action in [(1,'r', 'sit on bed'),(2,'g','sit on chair'),(3,'b', 'lying'),(4,'k', 'ambulating')]:
-    ts = single_sample.loc[single_sample['activity'] == x]['time']
-    xs = single_sample.loc[single_sample['activity'] == x]['frontal']
-    ys = single_sample.loc[single_sample['activity'] == x]['vertical']
-    zs = single_sample.loc[single_sample['activity'] == x]['lateral']
+for x,c,action in [(1,'r', 'sentado na cama'), (2,'g','sentado na cadeira'),
+                   (3,'b', 'deitado'),(4,'k', 'em movimento')]:
+    ts = single_sample.loc[single_sample['atividade'] == x]['tempo']
+    xs = single_sample.loc[single_sample['atividade'] == x]['frontal']
+    ys = single_sample.loc[single_sample['atividade'] == x]['vertical']
+    zs = single_sample.loc[single_sample['atividade'] == x]['lateral']
     ax.scatter(ts, xs, c=c, marker='.', label=action)
     ax.scatter(ts, ys, c=c, marker='x', label=action)
     ax.scatter(ts, zs, c=c, marker='^', label=action)
@@ -228,6 +241,24 @@ ax.legend()
 ax.set_xlabel('tempo (s)')
 ax.set_ylabel('aceleração (g)')
 plt.show()
+
+#%%
+# ***********************************
+# *** Pré-processamento dos dados ***
+# ***********************************
+
+# Adição de features
+
+#full_data['sala'] = 
+#full_data['sexo'] =  
+#full_data['id'] = 
+#full_data = [['sala', 'sexo', 'id', 'tempo', 'frontal', 'vertical', 
+#               'lateral', 'antena', 'rssi', 'fase', 'freq', 'atividade']
+
+# O ideal é que tenhamos atributos numéricos para que os algoritmos
+# trabalhem melhor, então no lugar de especificar a sala como S1 e
+# S2, podemos colocar os valores 0 para S1, e 1 para S2. O mesmo é
+# aplicado facilmente para o sexo. Já para gênero...
 
 #%%
 # Análise de PCA
