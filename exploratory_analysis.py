@@ -34,11 +34,27 @@ from mpl_toolkits.mplot3d import Axes3D #corrige erro projeção 3D
 # *** Leitura da base de dados ***
 # ********************************
 
+# Geração de listas de nomes dos arquivos por grupos (gênero e sala)
+arquivosSala1 = sorted(glob.glob('S1_Dataset/d*'))
+arquivosSala2 = sorted(glob.glob('S2_Dataset/d*'))
+
+arquivosGerais = arquivosSala1 + arquivosSala2
+
+arquivosHomens = [ arq for arq in arquivosGerais if arq.endswith('M') ]
+arquivosMulheres = [ arq for arq in arquivosGerais if arq.endswith('F') ]
+
+arquivosHomensS1 = [ arq for arq in arquivosSala1 if arq.endswith('M') ]
+arquivosHomensS2 = [ arq for arq in arquivosSala2 if arq.endswith('M') ]
+
+arquivosMulheresS1 = [ arq for arq in arquivosSala1 if arq.endswith('F') ]
+arquivosMulheresS2 = [ arq for arq in arquivosSala2 if arq.endswith('F') ]
+
+# Criação das bases de dados
 dataS1 = pd.concat([pd.read_csv(f, header=None) for f in 
-                glob.glob('S1_Dataset/d*')], ignore_index = True)
+                arquivosSala1], ignore_index = True)
 
 dataS2 = pd.concat([pd.read_csv(f, header=None) for f in 
-                glob.glob('S2_Dataset/d*')], ignore_index = True)
+                arquivosSala2], ignore_index = True)
 
 dataS1.columns = dataS2.columns = ['time','frontal','vertical','lateral',
                                    'id','rssi','phase','frequency','activity']
@@ -213,6 +229,7 @@ ax.set_xlabel('tempo (s)')
 ax.set_ylabel('aceleração (g)')
 plt.show()
 
+#%%
 # Análise de PCA
 print("Análise PCA em todo o conjunto de dados:")
 pca = PCA().fit(full_data.values[0:-1, :])
