@@ -6,7 +6,7 @@
 # ----------------------------------------
 
 # Base de dados: 
-# atividade recognition with healthy older people using a batteryless
+# Activity recognition with healthy older people using a batteryless
 # wearable sensor Data Set
 #
 # Grupo:
