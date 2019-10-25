@@ -19,6 +19,8 @@
 import glob
 import pandas as pd
 
+from sklearn.preprocessing import MinMaxScaler
+
 #%%
 # ***********************************
 # *** Pré-processamento dos dados ***
@@ -56,3 +58,10 @@ df = df[['sala', 'sexo', 'tempo', 'frontal', 'vertical',
 
 X = df.values[:, 0:-1]
 y = df.values[:, -1]
+
+#%% *** Normalização dos dados ***
+MinMax = MinMaxScaler(feature_range=(0, 1))
+
+X_escalonado = MinMax.fit_transform(X)
+
+df_Normalizado = pd.DataFrame(X_escalonado)
