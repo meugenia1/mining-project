@@ -1,0 +1,58 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+# ----------------------------------------
+# Projeto Soluções de Mineração de Dados
+# ----------------------------------------
+# ********** Pré-processamento **********
+
+# Base de dados: 
+# Activity recognition with healthy older people using a batteryless
+# wearable sensor Data Set
+#
+
+#%%
+# *********************************
+# *** Importação de bibliotecas ***
+# *********************************
+
+import glob
+import pandas as pd
+
+#%%
+# ***********************************
+# *** Pré-processamento dos dados ***
+# ***********************************
+
+# Salvar todos os data paths dos arquivos
+data_path_arquivos = sorted(glob.glob('S*_Dataset/d*'))
+
+df = pd.DataFrame()
+
+# Nome dos atributos dos arquivos da base de dados
+colunas = ['tempo', 'frontal', 'vertical', 'lateral', 'antena', 'rssi', 
+           'fase', 'frequencia', 'atividade']
+
+for data_path in data_path_arquivos:
+    pasta = data_path[0:11]         # Salva o nome da pasta, 'S1_Dataset/'
+    nome_arquivo = data_path[11:]   # Salva o nome do arquivo, ex.: 'd1p01M'
+    
+    if nome_arquivo != 'README.txt':
+        # Leitura do arquivo
+        data = pd.read_csv(data_path, header=None, names=colunas)
+        
+        # Substituir diretamente os caracteres por valores numéricos, para
+        # criação das colunas 'sala' e 'sexo':
+        data['sala'] = (0, 1)[nome_arquivo.startswith('d2')] # S1: 0 / S2:1
+        data['sexo'] = (0, 1)[nome_arquivo.endswith('F')] # 'M':0 / 'F':1
+        
+        # Juntando todos os arquivos lidos em um mesmo dataframe
+        df = df.append(data, ignore_index=True)
+
+# Reordenamento das colunas
+df = df[['sala', 'sexo', 'tempo', 'frontal', 'vertical', 
+                       'lateral', 'antena', 'rssi', 'fase', 'frequencia',
+                       'atividade']]
+
+X = df.values[:, 0:-1]
+y = df.values[:, -1]
