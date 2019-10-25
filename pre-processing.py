@@ -18,8 +18,12 @@
 
 import glob
 import pandas as pd
+import numpy as np
 
 from sklearn.preprocessing import MinMaxScaler
+
+from sklearn.decomposition import PCA
+import matplotlib.pyplot as plt
 
 #%%
 # ***********************************
@@ -52,10 +56,10 @@ for data_path in data_path_arquivos:
         df = df.append(data, ignore_index=True)
 
 # Reordenamento das colunas
-df = df[['sala', 'sexo', 'tempo', 'frontal', 'vertical', 
-                       'lateral', 'antena', 'rssi', 'fase', 'frequencia',
-                       'atividade']]
+df = df[['sala', 'sexo', 'tempo', 'frontal', 'vertical', 'lateral', 'antena', 
+         'rssi', 'fase', 'frequencia', 'atividade']]
 
+# Separação dos dados em atributos e classe
 X = df.values[:, 0:-1]
 y = df.values[:, -1]
 
@@ -65,3 +69,12 @@ MinMax = MinMaxScaler(feature_range=(0, 1))
 X_escalonado = MinMax.fit_transform(X)
 
 df_Normalizado = pd.DataFrame(X_escalonado)
+
+#%% *** Análise de Componentes Principais (PCA) ***
+
+pca = PCA().fit(X_escalonado)
+plt.plot(np.cumsum(pca.explained_variance_ratio_))
+plt.xlabel('Número de componentes')
+plt.ylabel('Variância explicada cumulativa')
+plt.title('Análise da variância explicativa com PCA', size=16)
+plt.show()
