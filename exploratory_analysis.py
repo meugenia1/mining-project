@@ -20,10 +20,10 @@
 # *** Importação de bibliotecas ***
 # *********************************
 
+import os
 import glob
 import numpy as np
 import pandas as pd
-from sklearn.decomposition import PCA
 import matplotlib.pyplot as plt
 from pandas.plotting import scatter_matrix
 
@@ -34,6 +34,7 @@ from mpl_toolkits.mplot3d import Axes3D #corrige erro projeção 3D
 # *** Leitura da base de dados ***
 # ********************************
 
+#%%
 # Geração de listas de nomes dos arquivos por grupos (gênero e sala)
 arquivosSala1 = sorted(glob.glob('S1_Dataset/d*'))
 arquivosSala2 = sorted(glob.glob('S2_Dataset/d*'))
@@ -241,29 +242,3 @@ ax.legend()
 ax.set_xlabel('tempo (s)')
 ax.set_ylabel('aceleração (g)')
 plt.show()
-
-#%%
-# ***********************************
-# *** Pré-processamento dos dados ***
-# ***********************************
-
-# Adição de features
-
-#full_data['sala'] = 
-#full_data['sexo'] =  
-#full_data['id'] = 
-#full_data = [['sala', 'sexo', 'id', 'tempo', 'frontal', 'vertical', 
-#               'lateral', 'antena', 'rssi', 'fase', 'freq', 'atividade']
-
-# O ideal é que tenhamos atributos numéricos para que os algoritmos
-# trabalhem melhor, então no lugar de especificar a sala como S1 e
-# S2, podemos colocar os valores 0 para S1, e 1 para S2. O mesmo é
-# aplicado facilmente para o sexo. Já para gênero...
-
-#%%
-# Análise de PCA
-print("Análise PCA em todo o conjunto de dados:")
-pca = PCA().fit(full_data.values[0:-1, :])
-plt.plot(np.cumsum(pca.explained_variance_ratio_))
-plt.xlabel('número de componentes')
-plt.ylabel('variância explicada cumulativa');
