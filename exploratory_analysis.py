@@ -26,6 +26,11 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from pandas.plotting import scatter_matrix
+from sklearn.ensemble import RandomForestClassifier
+from sklearn import datasets
+from sklearn.model_selection import train_test_split
+from sklearn.feature_selection import SelectFromModel
+from sklearn.metrics import accuracy_score
 
 from mpl_toolkits.mplot3d import Axes3D #corrige erro projeção 3D
 
@@ -242,3 +247,20 @@ ax.legend()
 ax.set_xlabel('tempo (s)')
 ax.set_ylabel('aceleração (g)')
 plt.show()
+
+X = full_data.values[:, 0:-1]
+y = full_data.values[:, -1]
+
+# Split the data into 40% test and 60% training
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.4, random_state=0)
+
+# Create a random forest classifier
+clf = RandomForestClassifier(n_estimators=10000, random_state=0, n_jobs=-1)
+
+# Train the classifier
+clf.fit(X_train, y_train)
+
+# Lista com importância de cada feature
+for feature in zip(full_data.columns, clf.feature_importances_):
+    print(feature)
+    
