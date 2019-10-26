@@ -25,6 +25,8 @@ from sklearn.preprocessing import MinMaxScaler
 from sklearn.decomposition import PCA
 import matplotlib.pyplot as plt
 
+from sklearn.model_selection import train_test_split
+
 #%%
 # ***********************************
 # *** Pré-processamento dos dados ***
@@ -63,18 +65,53 @@ df = df[['sala', 'sexo', 'tempo', 'frontal', 'vertical', 'lateral', 'antena',
 X = df.values[:, 0:-1]
 y = df.values[:, -1]
 
+#%% *********************************************************
+# *** Salvar dados processados em arquivos treino e teste ***
+# ***********************************************************
+
+seed = 75128
+X_treino, X_teste, y_treino, y_teste = train_test_split(X, y, test_size=0.3, 
+                                                        random_state=seed)
+
+# Fixando as dimensões das classes como (n_exemplos x 1)
+y_treino = np.reshape(y_treino, (y_treino.shape[0], 1))
+y_teste = np.reshape(y_teste, (y_teste.shape[0], 1))
+
+y_treino = y_treino.astype(int)
+
 #%% *** Normalização dos dados ***
 MinMax = MinMaxScaler(feature_range=(0, 1))
 
-X_escalonado = MinMax.fit_transform(X)
+# É importante que o fit seja realizado somente nos dados de treino
+MinMax.fit(X_treino)
 
-df_Normalizado = pd.DataFrame(X_escalonado)
+# Depois de determinados os parâmetros da normalização, aplicar nos
+# dados de treino e teste
+X_treino_escalonado = MinMax.transform(X_treino)
+X_teste_escalonado = MinMax.transform(X_teste)
 
-#%% *** Análise de Componentes Principais (PCA) ***
+tipos_dados = ['%d', '%d', '%10.9f', '%10.9f', '%10.9f', '%10.9f', '%10.9f', 
+               '%10.9f', '%10.9f', '%10.9f', '%d']
 
-pca = PCA().fit(X_escalonado)
+# Salvar os dados de treino e teste em arquivos .csv
+np.savetxt("Dataset_processado/dataset_treino_processado.csv", 
+           np.hstack((X_treino_escalonado, y_treino)), comments='',
+           fmt=tipos_dados, delimiter=",", header=','.join(df.columns))
+np.savetxt("Dataset_processado/dataset_teste_processado.csv", 
+           np.hstack((X_teste_escalonado, y_teste)), comments='',
+           fmt=tipos_dados, delimiter=",", header=','.join(df.columns))
+
+#%% ***************************************
+# *** Análise de Componentes Principais ***
+# *****************************************
+
+pca = PCA().fit(X_treino_escalonado)
 plt.plot(np.cumsum(pca.explained_variance_ratio_))
 plt.xlabel('Número de componentes')
 plt.ylabel('Variância explicada cumulativa')
 plt.title('Análise da variância explicativa com PCA', size=16)
 plt.show()
+
+df = pd.read_csv('Dataset_processado/dataset_treino_processado.csv')
+
+print(df.head())
