@@ -109,14 +109,5 @@ pca = PCA().fit(X_treino_escalonado)
 plt.plot(np.cumsum(pca.explained_variance_ratio_))
 plt.xlabel('Número de componentes')
 plt.ylabel('Variância explicada cumulativa')
-<<<<<<< HEAD
-plt.title('Análise da variância explicativa com PCA', size=16)
-plt.show()
-
-df = pd.read_csv('Dataset_processado/dataset_treino_processado.csv')
-
-print(df.head())
-=======
 plt.title('Análise da variância explicada com PCA\n(normalização MinMax)', size=16)
 plt.show()
->>>>>>> e358411a64ca08f4521e2c91aaed19fd9222bfb8
